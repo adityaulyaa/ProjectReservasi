@@ -154,31 +154,6 @@ npm run dev  # Terminal 1
 php artisan serve  # Terminal 2
 ```
 
-### 2. Implementation Phase (Siap Dikerjakan)
-
-Sekarang team bisa mulai mengimplementasikan fitur dengan struktur yang sudah ready:
-
-**Priority 1 - Database:**
-- [ ] Isi migration files dengan schema lengkap (lihat `docs/DATABASE.md`)
-- [ ] Isi seeder files dengan demo data
-- [ ] Run `php artisan migrate:fresh --seed`
-
-**Priority 2 - Auth & User Management:**
-- [ ] Customize Breeze views (tambah role field di register)
-- [ ] Implement admin user verification flow
-- [ ] Setup redirect based on role after login
-
-**Priority 3 - Core Features:**
-- [ ] Implement ReservationService logic (conflict check, slot validation)
-- [ ] Implement ReportService logic (photo upload, status update)
-- [ ] Create views untuk semua controllers
-- [ ] Add Form Request validation classes
-
-**Priority 4 - Testing:**
-- [ ] Write feature tests untuk reservation flow
-- [ ] Write feature tests untuk report flow
-- [ ] Test role-based access control
-
 ---
 
 ## 📋 Git Workflow
