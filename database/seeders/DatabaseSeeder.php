@@ -15,18 +15,45 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'User Satu (Owner Demo)',
-            'email' => 'user1@example.com',
-            'password' => bcrypt('password'),
-            'email_verified_at' => now(),
-        ]);
+        // Admin default untuk SRS Module 1
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Administrator',
+                'password' => 'password',
+                'role' => 'admin',
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'User Dua (Member Demo)',
-            'email' => 'user2@example.com',
-            'password' => bcrypt('password'),
-            'email_verified_at' => now(),
-        ]);
+        // User biasa untuk testing
+        User::updateOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'User Biasa',
+                'password' => 'password',
+                'role' => 'user',
+            ]
+        );
+
+        // User Demo untuk SRS Module 2 (Owner & Member)
+        User::updateOrCreate(
+            ['email' => 'user1@example.com'],
+            [
+                'name' => 'User Satu (Owner Demo)',
+                'password' => 'password',
+                'role' => 'user',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'user2@example.com'],
+            [
+                'name' => 'User Dua (Member Demo)',
+                'password' => 'password',
+                'role' => 'user',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

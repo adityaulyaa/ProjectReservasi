@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\ReservationController;
@@ -22,6 +23,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('lists', ListController::class);
     Route::post('lists/{list}/members', [ListController::class, 'addMember'])->name('lists.members.add');
     Route::delete('lists/{list}/members/{user}', [ListController::class, 'removeMember'])->name('lists.members.remove');
+    
+    Route::get('/progress', [ProgressController::class, 'index'])->name('progress.index');
+    Route::get('/progress/{list}', [ProgressController::class, 'show'])->name('progress.show');
     
     Route::middleware('role:user')->group(function () {
         Route::resource('reservations', ReservationController::class);

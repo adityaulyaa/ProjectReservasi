@@ -18,6 +18,12 @@
                     <x-nav-link :href="route('lists.index')" :active="request()->routeIs('lists.*')">
                         {{ __('Proyek & List') }}
                     </x-nav-link>
+
+                    @if (Auth::user()->role === 'admin')
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                            {{ __('Kelola Pengguna') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -76,6 +82,12 @@
             <x-responsive-nav-link :href="route('lists.index')" :active="request()->routeIs('lists.*')">
                 {{ __('Proyek & List') }}
             </x-responsive-nav-link>
+
+            @if (Auth::user()->role === 'admin')
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                    {{ __('Kelola Pengguna') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
