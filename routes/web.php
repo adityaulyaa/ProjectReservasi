@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ListController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\User\DashboardController;
@@ -17,6 +18,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::resource('lists', ListController::class);
+    Route::post('lists/{list}/members', [ListController::class, 'addMember'])->name('lists.members.add');
+    Route::delete('lists/{list}/members/{user}', [ListController::class, 'removeMember'])->name('lists.members.remove');
     
     Route::middleware('role:user')->group(function () {
         Route::resource('reservations', ReservationController::class);
