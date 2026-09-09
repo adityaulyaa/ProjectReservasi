@@ -34,5 +34,26 @@ class DatabaseSeeder extends Seeder
                 'role' => 'user',
             ]
         );
+
+        // User Demo untuk SRS Module 2 (Owner & Member)
+        User::updateOrCreate(
+            ['email' => 'user1@example.com'],
+            [
+                'name' => 'User Satu (Owner Demo)',
+                'password' => 'password',
+                'role' => 'user',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'user2@example.com'],
+            [
+                'name' => 'User Dua (Member Demo)',
+                'password' => 'password',
+                'role' => 'user',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
