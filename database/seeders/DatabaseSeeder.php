@@ -15,11 +15,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Admin default untuk SRS Module 1
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Administrator',
+                'password' => 'password',
+                'role' => 'admin',
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // User biasa untuk testing
+        User::updateOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'User Biasa',
+                'password' => 'password',
+                'role' => 'user',
+            ]
+        );
     }
 }
