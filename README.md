@@ -1,225 +1,156 @@
-# Sistem Reservasi & Pelaporan Fasilitas Kampus
+# SRS (Software Requirements Specification)
 
-Aplikasi web untuk mengelola penggunaan fasilitas kampus (ruang kelas, aula, laboratorium, alat, dan lapangan). Pengguna dapat mengecek ketersediaan dan mengajukan reservasi, serta melaporkan kerusakan atau masalah pada fasilitas yang sama.
+## Module 1: Authentication & User Management
+Modul ini mengelola pendaftaran, autentikasi, serta hak akses dalam sistem.
 
-## Fitur Utama
+### 1.1 System Admin Management (Fungsional Admin)
 
-- **Multi-role System**: Pengunjung (no-auth), Pengguna (mahasiswa/dosen/staf), Petugas, Admin
-- **Reservasi Fasilitas**: Slot 30 menit (07.00-20.00), approval workflow, conflict prevention
-- **Pelaporan Kerusakan**: Upload foto, status tracking, integrasi dengan status fasilitas
-- **Admin Dashboard**: CRUD fasilitas, user management, export rekap (CSV/Excel/PDF)
-- **Real-time Availability**: Kalender ketersediaan per fasilitas
+- **FR-ADM-01**: Admin dapat menambahkan akun pengguna baru (Create User) secara manual dengan menginput nama, email, dan password sementara.
+- **FR-ADM-02**: Admin dapat menghapus akun pengguna (Delete User) yang akan berdampak pada pencabutan akses pengguna tersebut dari sistem.
+- **FR-ADM-03**: Admin dapat melihat daftar seluruh akun pengguna yang terdaftar di dalam sistem (Read/List Users).
+- **FR-ADM-04**: Admin dapat mereset password akun pengguna jika terjadi kendala akses.
 
-## Tech Stack
+### 1.2 Authentication & Authorization (Fungsional Pengguna)
 
-- **Framework**: Laravel 13
-- **Database**: MySQL 8.0+
-- **Frontend**: Blade + Tailwind CSS
-- **Authentication**: Laravel Breeze
-- **PHP**: 8.5+
-- **Node.js**: 18+
+- **FR-ATH-01**: Pengguna dapat melakukan Login menggunakan email dan password.
+- **FR-ATH-02**: Pengguna dapat melakukan Logout dari sistem.
+- **FR-ATH-03**: Sistem harus memvalidasi hak akses (Role-based Access Control / RBAC) antara Admin dan User Biasa.
 
-## Requirement untuk Development
+## Module 2: Project & List Management
+Modul ini mengelola wadah pengelompokan tugas, baik personal maupun tim.
 
-### Windows Setup (Recommended)
+### 2.1 Manajemen Daftar/Proyek
 
-1. **PHP 8.5+**
-   - Gunakan Laravel Herd atau Laragon untuk kemudahan
-   - Alternative: Install manual dari php.new
+- **FR-LST-01**: Pengguna dapat membuat daftar (list/project) baru untuk mengelompokkan tugas.
+- **FR-LST-02**: Pengguna yang membuat daftar secara otomatis menjadi Pemilik Daftar (List Owner).
+- **FR-LST-03**: Pemilik Daftar dapat mengubah nama, deskripsi, atau menghapus daftar yang dimilikinya.
+- **FR-LST-04**: Pengguna dapat melihat semua daftar pribadi dan daftar kolaborasi tempat ia terdaftar.
 
-2. **Composer 2.x**
-   ```bash
-   composer --version
-   ```
+### 2.2 Kolaborasi & Keanggotaan Daftar
 
-3. **MySQL 8.0+**
-   - Include dengan Laravel Herd/Laragon
-   - Alternative: Install XAMPP/manual
+- **FR-COL-01**: Pemilik Daftar dapat mengundang/menambahkan pengguna lain (Anggota/Member) ke dalam daftarnya menggunakan email atau nama pengguna.
+- **FR-COL-02**: Pemilik Daftar dapat mengeluarkan anggota dari daftarnya.
+- **FR-COL-03**: Anggota yang ditambahkan dapat melihat seluruh tugas dan berkontribusi di dalam daftar tersebut.
 
-4. **Node.js 18+**
-   ```bash
-   node --version
-   npm --version
-   ```
+## Module 3: Task Management
+Modul inti untuk pengelolaan tugas individu maupun bersama.
 
-### Verify Installation
+### 3.1 Operasi Dasar Tugas (CRUD)
 
-```bash
-php -v
-composer --version
-node --version
-mysql --version
-```
+- **FR-TSK-01**: Pengguna dapat membuat tugas baru di dalam daftar tertentu.
+- **FR-TSK-02**: Pengguna dapat memperbarui rincian tugas (judul, deskripsi).
+- **FR-TSK-03**: Pengguna dapat menghapus tugas dari daftar.
 
-## Installation
+### 3.2 Atribut & Penugasan
 
-### 1. Clone Repository
+- **FR-TSK-04**: Pengguna dapat menetapkan tingkat prioritas pada tugas (misal: Low, Medium, High, Urgent).
+- **FR-TSK-05**: Pengguna dapat menentukan tenggat waktu (due date) dan jam penyelesaian tugas.
+- **FR-TSK-06**: Pemilik Daftar/Anggota dapat menunjuk (assign) diri sendiri atau anggota lain dalam daftar untuk mengerjakan tugas tertentu.
+- **FR-TSK-07**: Pengguna dapat mengubah status tugas menjadi Selesai (Completed) atau membukanya kembali (Re-open).
 
-```bash
-git clone https://github.com/your-team/ProjectReservasi.git
-cd ProjectReservasi
-```
+## Module 4: Progress Tracking & Monitoring
+Modul khusus pemantauan perkembangan tugas bagi Pemilik Daftar dan Anggota.
 
-### 2. Install Dependencies
+- **FR-PRG-01**: Pemilik Daftar dapat melihat progress bar atau persentase penyelesaian tugas secara keseluruhan dalam satu daftar (misal: 5 dari 10 tugas selesai = 50%).
+- **FR-PRG-02**: Pemilik Daftar dapat memfilter tugas berdasarkan status (Belum Selesai, Selesai), prioritas, atau anggota yang ditunjuk.
+- **FR-PRG-03**: Sistem menampilkan indikator visual (misal: warna merah) untuk tugas-tugas yang telah melewati tenggat waktu (overdue).
 
-```bash
-composer install
-npm install
-```
+## Module 5: Non-Functional Requirements (NFR)
+Spesifikasi kualitas dan performa aplikasi web Jara.
 
-### 3. Setup Environment
+- **NFR-SEC-01 (Kemanan)**: Password pengguna wajib dienkripsi menggunakan algoritma hashing yang aman (misal: bcrypt).
+- **NFR-PER-01 (Performa)**: Halaman web harus dapat dimuat (load time) kurang dari 2 detik pada kondisi koneksi internet normal.
+- **NFR-USE-01 (Usability)**: Antarmuka web (UI/UX) harus responsif (dapat diakses dengan baik melalui layar desktop maupun mobile/tablet).
 
-Copy `.env.example` menjadi `.env`:
+---
 
-```bash
-cp .env.example .env
-```
+# Pembagian Tugas 3 Programmer (Laravel Monolith)
 
-Generate application key:
-
-```bash
-php artisan key:generate
-```
-
-### 4. Configure Database
-
-Edit `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=project_reservasi
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### 5. Run Migrations & Seeders
-
-```bash
-php artisan migrate:fresh --seed
-```
-
-### 6. Build Frontend Assets
-
-```bash
-npm run build
-```
-
-Untuk development dengan hot reload:
-
-```bash
-npm run dev
-```
-
-Di terminal lain:
-
-```bash
-php artisan serve
-```
-
-Access aplikasi di `http://localhost:8000`
-
-## Struktur Folder
+Dalam arsitektur monolitik Laravel, pembagian tugas dibagi menjadi Fitur Admin & Fondasi, Fitur Kolaborasi Proyek, dan Fitur Inti Tugas & Dashboard.
 
 ```
-ProjectReservasi/
-├── app/
-│   ├── Enums/                 # Status & Role enums
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   ├── Admin/         # Admin controllers
-│   │   │   ├── Staff/         # Staff controllers
-│   │   │   ├── User/          # User controllers
-│   │   │   └── PublicController.php
-│   │   ├── Middleware/        # RoleMiddleware
-│   │   └── Requests/          # Form validation
-│   ├── Models/                # Eloquent models
-│   └── Services/              # Business logic
-├── database/
-│   ├── migrations/            # Database schemas
-│   ├── seeders/               # Demo data
-│   └── factories/             # Model factories
-├── resources/
-│   ├── views/                 # Blade templates
-│   ├── css/                   # Tailwind CSS
-│   └── js/                    # JavaScript
-├── routes/
-│   ├── web.php                # Public & user routes
-│   ├── admin.php              # Admin routes
-│   └── staff.php              # Staff routes
-├── storage/app/public/reports # Uploaded report photos
-├── docs/
-│   ├── DATABASE.md            # Database schema
-│   ├── API.md                 # Route list
-│   └── DEPLOYMENT.md          # Deployment guide
-└── tests/                     # PHPUnit tests
+                           +-----------------------------------+
+                           |        PROGRAMMER 1 (LEAD)        |
+                           | Setup Master, Auth & Modul Admin  |
+                           +-----------------+-----------------+
+                                             |
+            +--------------------------------+--------------------------------+
+            |                                                                 |
++-----------v-----------------------+                             +-----------v-----------------------+
+| PROGRAMMER 2                      |                             | PROGRAMMER 3                      |
+| Modul List/Project & Kolaborasi   |                             | Modul Task Engine & Progress UI   |
++-----------------------------------+                             +-----------------------------------+
 ```
 
-## User Roles & Access
+## Programmer 1: Foundation, Auth & Admin Management (Lead)
 
-| Role | Access | Fitur Utama |
-|------|--------|-----------|
-| Pengunjung | Public (no login) | Lihat daftar fasilitas & ketersediaan |
-| Pengguna | After login | Reservasi, lapor kerusakan, lihat history |
-| Petugas | /staff | Proses reservasi & laporan, update status fasilitas |
-| Admin | /admin | Manage fasilitas, user, export rekap |
+**Fokus**: Menyiapkan struktur dasar aplikasi Laravel dan menangani seluruh manajemen akun.
 
-## Jam Operasional
+### Tanggung Jawab
 
-- **Hours**: 07.00 - 20.00 WIB
-- **Slot Duration**: 30 menit
-- **Contoh**: 07.00-07.30, 07.30-08.00, dst.
+#### Setup Proyek
+Inisialisasi framework Laravel, pengaturan database (.env), konfigurasi CSS (Tailwind/Bootstrap), dan struktur folder views/Blade layout utama.
 
-Validasi slot dilakukan di server-side, bukan hanya di UI.
+#### Authentication & Access Control
+- Membuat fitur Login & Logout (bisa memanfaatkan Laravel Breeze / skema auth standar).
+- Membuat Middleware Laravel untuk memisahkan hak akses antara Admin dan User.
 
-## Testing
+#### Modul Admin (SRS Module 1)
+- Membuat AdminController & Migration tambahan untuk role user.
+- Membuat tampilan Blade Dashboard Admin.
+- Mengimplementasikan fungsi Tambah User Baru dan Hapus User oleh Admin.
 
-Run PHPUnit tests:
+#### Migration Database
+Membuat tabel dasar users dan roles.
 
-```bash
-php artisan test
-```
+## Programmer 2: List/Project & Team Collaboration Specialist
 
-Run dengan coverage:
+**Fokus**: Menangani wadah proyek/daftar dan sistem pengundangan anggota tim.
 
-```bash
-php artisan test --coverage
-```
+### Tanggung Jawab
 
-## Code Quality
+#### Database Migration & Model
+Membuat tabel lists / projects dan tabel pivot list_user (untuk relasi Many-to-Many antara Daftar dan Anggota).
 
-Run PHP Linter (Pint):
+#### Modul List / Project (SRS Module 2.1)
+- Membuat ListController (CRUD Daftar/Proyek).
+- Membuat tampilan Blade untuk halaman daftar proyek (Halaman Utama User).
+- Memastikan aturan bahwa pembuat daftar otomatis tercatat sebagai List Owner.
 
-```bash
-./vendor/bin/pint
-```
+#### Modul Kolaborasi Tim (SRS Module 2.2)
+- Membuat fitur pencarian dan penambahan akun user ke dalam daftar (Add Member).
+- Membuat fitur hapus anggota dari daftar (Remove Member).
+- Membuat Laravel Policy (ListPolicy) untuk memastikan hanya Owner yang bisa menambah/menghapus anggota atau menghapus daftar.
 
-## Documentation
+## Programmer 3: Task Engine & Progress Tracking Specialist
 
-- `COLLABORATION.md` - Git workflow & development guidelines
-- `docs/DATABASE.md` - ERD & database schema
-- `docs/API.md` - Route list & endpoint documentation
-- `docs/DEPLOYMENT.md` - Production deployment checklist
+**Fokus**: Menangani pengoperasian tugas individu/tim dan visualisasi pemantauan.
 
-## Kontribusi Team
+### Tanggung Jawab
 
-Lihat `COLLABORATION.md` untuk:
-- Git branch naming convention
-- Commit message format
-- Pull request process
-- Code review checklist
+#### Database Migration & Model
+Membuat tabel tasks (dengan kolom list_id, assigned_to, title, description, priority, due_date, is_completed).
 
-## Support & Issues
+#### Modul Pengelolaan Tugas (SRS Module 3)
+- Membuat TaskController (CRUD Tugas di dalam daftar).
+- Membuat form modal/halaman Blade untuk tambah & edit tugas.
+- Mengimplementasikan fitur penetapan Priority, Due Date, Assignee (pilih anggota daftar), dan toggle Check/Uncheck (Selesai).
 
-Untuk pertanyaan atau issues, silakan buat issue di GitHub dengan format:
-- **Title**: [CATEGORY] Brief description
-- **Category**: Bug / Feature / Documentation / Question
-- **Description**: Detail lengkap dengan steps to reproduce
+#### Modul Progress & Monitoring (SRS Module 4)
+- Membuat kalkulasi persentase penyelesaian tugas di Controller/Model.
+- Membuat komponen Progress Bar di tampilan Blade.
+- Membuat logika kondisional warna/badge untuk tugas yang Overdue (melewati tenggat waktu).
+- Membuat fitur filtering tugas (berdasarkan status selesai/belum, prioritas, atau penanggung jawab).
 
-## Timeline
+## Alur Integrasi Antar Programmer
 
-- **Start Date**: Semester baru 2026
-- **Deadline**: 11 Oktober 2026, 12:00 WIB
-- **Presentation**: TBA
-- **Team Size**: 4-5 mahasiswa
+### Sprint Awal (Hari 1-2)
+Programmer 1 melakukan setup repositori Git, instansiasi Laravel, dan membagikan basis kode awal yang sudah memiliki sistem Auth.
+
+### Sprint Pengembangan (Hari 3-7)
+- Programmer 1 menyelesaikan fitur Admin.
+- Programmer 2 membuat fitur List dan pengundangan anggota tim.
+- Programmer 3 membuat fitur Task di dalam List yang dibuat Programmer 2.
+
+### Sprint Final (Hari 8-10)
+Penggabungan seluruh file Blade layout, pengujian Laravel Policy/Middleware, dan perbaikan tampilan (UI).
