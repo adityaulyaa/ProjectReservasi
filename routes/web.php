@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\ReservationController;
@@ -17,6 +18,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    Route::get('/progress', [ProgressController::class, 'index'])->name('progress.index');
+    Route::get('/progress/{list}', [ProgressController::class, 'show'])->name('progress.show');
     
     Route::middleware('role:user')->group(function () {
         Route::resource('reservations', ReservationController::class);
