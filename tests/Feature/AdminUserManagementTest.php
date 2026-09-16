@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AdminUserManagementTest extends TestCase
@@ -136,5 +137,20 @@ class AdminUserManagementTest extends TestCase
 
         $response->assertSessionHas('error');
         $this->assertDatabaseHas('users', ['id' => $admin->id]);
+    }
+
+    public function test_admin_can_reset_user_password(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'user']);
+
+        $response = $this->actingAs($admin)->patch(route('admin.users.reset-password', $user->id), [
+            'password' => 'newSecretPass123',
+            'password_confirmation' => 'newSecretPass123',
+        ]);
+
+        $response->assertRedirect(route('admin.users.index'));
+        $user->refresh();
+        $this->assertTrue(Hash::check('newSecretPass123', $user->password));
     }
 }

@@ -15,7 +15,14 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    @if(Auth::check() && Auth::user()->role === 'admin')
+
+                    @if(Route::has('lists.index'))
+                        <x-nav-link :href="route('lists.index')" :active="request()->routeIs('lists.*')">
+                            {{ __('Proyek & List') }}
+                        </x-nav-link>
+                    @endif
+
+                    @if (Auth::check() && Auth::user()->role === 'admin')
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                             {{ __('Manajemen Akun') }}
                         </x-nav-link>
@@ -75,7 +82,14 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            @if(Auth::check() && Auth::user()->role === 'admin')
+
+            @if(Route::has('lists.index'))
+                <x-responsive-nav-link :href="route('lists.index')" :active="request()->routeIs('lists.*')">
+                    {{ __('Proyek & List') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if (Auth::check() && Auth::user()->role === 'admin')
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                     {{ __('Manajemen Akun') }}
                 </x-responsive-nav-link>

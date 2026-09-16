@@ -15,17 +15,17 @@ use Illuminate\View\View;
 class UserController extends Controller
 {
     /**
-     * Display a listing of user accounts.
+     * FR-ADM-03: Menampilkan daftar seluruh akun pengguna
      */
     public function index(Request $request): View
     {
         $query = User::query();
 
+        $search = $request->input('search');
         if ($request->filled('search')) {
-            $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -44,7 +44,14 @@ class UserController extends Controller
 
         $users = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
-        return view('admin.users.index', compact('users'));
+        $stats = [
+            'total' => User::count(),
+            'admin' => User::where('role', 'admin')->count(),
+            'staff' => User::where('role', 'staff')->count(),
+            'user'  => User::where('role', 'user')->count(),
+        ];
+
+        return view('admin.users.index', compact('users', 'stats', 'search'));
     }
 
     /**
@@ -56,13 +63,13 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created user account.
+     * FR-ADM-01: Menambahkan akun pengguna baru secara manual
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
         $validated = $request->validated();
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -70,7 +77,8 @@ class UserController extends Controller
             'is_verified' => $request->boolean('is_verified', true),
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'User account created successfully.');
+        return redirect()->route('admin.users.index')
+            ->with('success', "Pengguna '{$user->name}' berhasil ditambahkan!");
     }
 
     /**
@@ -102,23 +110,26 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'User account updated successfully.');
+        return redirect()->route('admin.users.index')
+            ->with('success', "Akun '{$user->name}' berhasil diperbarui.");
     }
 
     /**
-     * Remove the specified user account from storage.
+     * FR-ADM-02: Menghapus akun pengguna dari sistem
      */
     public function destroy(int|string $id): RedirectResponse
     {
         $user = User::findOrFail($id);
 
         if (Auth::id() === $user->id) {
-            return back()->with('error', 'You cannot delete your own account.');
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif!');
         }
 
+        $userName = $user->name;
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'User account deleted successfully.');
+        return redirect()->route('admin.users.index')
+            ->with('success', "Akun '{$userName}' berhasil dihapus dari sistem.");
     }
 
     /**
@@ -133,7 +144,7 @@ class UserController extends Controller
         }
         $user->save();
 
-        return back()->with('success', "User '{$user->name}' account verified successfully.");
+        return back()->with('success', "Akun '{$user->name}' berhasil diverifikasi.");
     }
 
     /**
@@ -145,6 +156,24 @@ class UserController extends Controller
         $user->is_verified = false;
         $user->save();
 
-        return back()->with('success', "User '{$user->name}' account verification rejected.");
+        return back()->with('success', "Status verifikasi akun '{$user->name}' ditolak/dibatalkan.");
+    }
+
+    /**
+     * FR-ADM-04: Mereset password akun pengguna jika terjadi kendala akses
+     */
+    public function resetPassword(Request $request, int|string $id): RedirectResponse
+    {
+        $request->validate([
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', "Password untuk akun '{$user->name}' berhasil direset!");
     }
 }

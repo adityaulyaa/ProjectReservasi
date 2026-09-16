@@ -1,156 +1,100 @@
 # SRS (Software Requirements Specification)
 
 ## Module 1: Authentication & User Management
-Modul ini mengelola pendaftaran, autentikasi, serta hak akses dalam sistem.
+Modul ini mengelola hak akses akun, manajemen pengguna oleh Admin, serta validasi keamanan input.
 
-### 1.1 System Admin Management (Fungsional Admin)
+### 1.1 Admin User Creation (SRS-MOD1-01)
+- **Deskripsi:** Admin dapat menambahkan akun pengguna baru ke dalam sistem.
+- **Input:** Nama lengkap, Alamat Email, dan Password sementara.
+- **Validasi:** Email format valid & unik, password minimal panjang, semua input divalidasi. Menggunakan Eloquent ORM untuk mencegah SQL Injection.
 
-- **FR-ADM-01**: Admin dapat menambahkan akun pengguna baru (Create User) secara manual dengan menginput nama, email, dan password sementara.
-- **FR-ADM-02**: Admin dapat menghapus akun pengguna (Delete User) yang akan berdampak pada pencabutan akses pengguna tersebut dari sistem.
-- **FR-ADM-03**: Admin dapat melihat daftar seluruh akun pengguna yang terdaftar di dalam sistem (Read/List Users).
-- **FR-ADM-04**: Admin dapat mereset password akun pengguna jika terjadi kendala akses.
+### 1.2 Admin User Deletion (SRS-MOD1-02)
+- **Deskripsi:** Admin dapat menghapus akun pengguna dari sistem.
+- **Proses:** Penghapusan mencabut hak akses dan menyesuaikan keanggotaan di daftar terkait.
 
-### 1.2 Authentication & Authorization (Fungsional Pengguna)
-
-- **FR-ATH-01**: Pengguna dapat melakukan Login menggunakan email dan password.
-- **FR-ATH-02**: Pengguna dapat melakukan Logout dari sistem.
-- **FR-ATH-03**: Sistem harus memvalidasi hak akses (Role-based Access Control / RBAC) antara Admin dan User Biasa.
-
-## Module 2: Project & List Management
-Modul ini mengelola wadah pengelompokan tugas, baik personal maupun tim.
-
-### 2.1 Manajemen Daftar/Proyek
-
-- **FR-LST-01**: Pengguna dapat membuat daftar (list/project) baru untuk mengelompokkan tugas.
-- **FR-LST-02**: Pengguna yang membuat daftar secara otomatis menjadi Pemilik Daftar (List Owner).
-- **FR-LST-03**: Pemilik Daftar dapat mengubah nama, deskripsi, atau menghapus daftar yang dimilikinya.
-- **FR-LST-04**: Pengguna dapat melihat semua daftar pribadi dan daftar kolaborasi tempat ia terdaftar.
-
-### 2.2 Kolaborasi & Keanggotaan Daftar
-
-- **FR-COL-01**: Pemilik Daftar dapat mengundang/menambahkan pengguna lain (Anggota/Member) ke dalam daftarnya menggunakan email atau nama pengguna.
-- **FR-COL-02**: Pemilik Daftar dapat mengeluarkan anggota dari daftarnya.
-- **FR-COL-03**: Anggota yang ditambahkan dapat melihat seluruh tugas dan berkontribusi di dalam daftar tersebut.
-
-## Module 3: Task Management
-Modul inti untuk pengelolaan tugas individu maupun bersama.
-
-### 3.1 Operasi Dasar Tugas (CRUD)
-
-- **FR-TSK-01**: Pengguna dapat membuat tugas baru di dalam daftar tertentu.
-- **FR-TSK-02**: Pengguna dapat memperbarui rincian tugas (judul, deskripsi).
-- **FR-TSK-03**: Pengguna dapat menghapus tugas dari daftar.
-
-### 3.2 Atribut & Penugasan
-
-- **FR-TSK-04**: Pengguna dapat menetapkan tingkat prioritas pada tugas (misal: Low, Medium, High, Urgent).
-- **FR-TSK-05**: Pengguna dapat menentukan tenggat waktu (due date) dan jam penyelesaian tugas.
-- **FR-TSK-06**: Pemilik Daftar/Anggota dapat menunjuk (assign) diri sendiri atau anggota lain dalam daftar untuk mengerjakan tugas tertentu.
-- **FR-TSK-07**: Pengguna dapat mengubah status tugas menjadi Selesai (Completed) atau membukanya kembali (Re-open).
-
-## Module 4: Progress Tracking & Monitoring
-Modul khusus pemantauan perkembangan tugas bagi Pemilik Daftar dan Anggota.
-
-- **FR-PRG-01**: Pemilik Daftar dapat melihat progress bar atau persentase penyelesaian tugas secara keseluruhan dalam satu daftar (misal: 5 dari 10 tugas selesai = 50%).
-- **FR-PRG-02**: Pemilik Daftar dapat memfilter tugas berdasarkan status (Belum Selesai, Selesai), prioritas, atau anggota yang ditunjuk.
-- **FR-PRG-03**: Sistem menampilkan indikator visual (misal: warna merah) untuk tugas-tugas yang telah melewati tenggat waktu (overdue).
-
-## Module 5: Non-Functional Requirements (NFR)
-Spesifikasi kualitas dan performa aplikasi web Jara.
-
-- **NFR-SEC-01 (Kemanan)**: Password pengguna wajib dienkripsi menggunakan algoritma hashing yang aman (misal: bcrypt).
-- **NFR-PER-01 (Performa)**: Halaman web harus dapat dimuat (load time) kurang dari 2 detik pada kondisi koneksi internet normal.
-- **NFR-USE-01 (Usability)**: Antarmuka web (UI/UX) harus responsif (dapat diakses dengan baik melalui layar desktop maupun mobile/tablet).
+### 1.3 Role & Authorization Check (SRS-MOD1-03)
+- **Deskripsi:** Sistem menolak akses otomatis bagi pengguna yang tidak berwenang (Unauthorized Request).
+- **Aturan:** Hanya role **Admin** yang dapat mengakses fungsi pembuatan dan penghapusan akun.
 
 ---
 
-# Pembagian Tugas 3 Programmer (Laravel Monolith)
+## Module 2: List / Project & Team Collaboration
+Modul ini menangani pengelolaan daftar (project/list), keanggotaan tim, dan transaksi atomis.
 
-Dalam arsitektur monolitik Laravel, pembagian tugas dibagi menjadi Fitur Admin & Fondasi, Fitur Kolaborasi Proyek, dan Fitur Inti Tugas & Dashboard.
+### 2.1 Creation of List & Auto-Ownership (SRS-MOD2-01)
+- **Deskripsi:** Pengguna dapat membuat daftar baru untuk mengelompokkan tugas.
+- **Aturan Bisnis:** Pembuat otomatis menjadi **Pemilik Daftar**.
+
+### 2.2 Atomic Deletion of List (SRS-MOD2-02)
+- **Deskripsi:** Pemilik dapat menghapus daftar miliknya.
+- **Transaksi Atomis:** Penghapusan daftar, semua tugas, dan data keanggotaan (`list_user`) dilakukan dalam `DB::transaction()`. Jika ada kegagalan, seluruh perubahan di‑rollback.
+
+### 2.3 Team Collaboration / Member Management (SRS-MOD2-03)
+- **Deskripsi:** Pemilik dapat menambahkan pengguna lain ke daftar untuk kolaborasi bersama.
+
+### 2.4 Authorization & Input Validation for List (SRS-MOD2-04)
+- **Keamanan:** Permintaan hapus atau penambahan anggota oleh non‑owner ditolak (Laravel Policy → 403 Forbidden). Semua input nama/deskripsi daftar divalidasi dan diproses dengan parameterized query.
+
+---
+
+## Module 3: Task Management & Operations
+Modul ini menangani siklus hidup tugas, penetapan atribut, dan penandaan selesai.
+
+### 3.1 Task Creation & Assignment (SRS-MOD3-01)
+- **Deskripsi:** Pemilik maupun anggota dapat membuat tugas baru dalam daftar terkait dan/atau menunjuk penanggung jawab.
+
+### 3.2 Task Attributes - Priority & Due Date (SRS-MOD3-02)
+- **Deskripsi:** Pengguna dapat menetapkan prioritas (Low, Medium, High) dan tenggat waktu pada tiap tugas.
+- **Validasi:** Tanggal harus format tanggal yang valid; semua parameter diproses aman dari SQL Injection.
+
+### 3.3 Task Completion Marking (SRS-MOD3-03)
+- **Deskripsi:** Pengguna dapat menandai tugas selesai (Completed) atau mengubah status kembali.
+
+### 3.4 Task Authorization (SRS-MOD3-04)
+- **Aturan:** Pengguna di luar daftar dilarang membuat, mengubah, atau menandai tugas.
+
+---
+
+## Module 4: Progress Tracking & Monitoring
+Modul ini menangani visibilitas dan pemantauan penyelesaian tugas dalam suatu daftar.
+
+### 4.1 List Progress Monitoring (SRS-MOD4-01)
+- **Deskripsi:** Pemilik dan anggota dapat memantau progress penyelesaian tugas dalam daftar.
+- **Fitur:** Menampilkan progres bar (%) berdasarkan rasio tugas selesai vs total tugas.
+
+### 4.2 Task Filtering & Alerting (SRS-MOD4-02)
+- **Deskripsi:** Sistem dapat memfilter tugas dan memberikan indikator visual untuk tugas yang melewati tenggat waktu (Overdue).
+
+---
+
+## 2. Pembagian Tugas Tiap Programmer (Development Phase)
+Dengan asumsi setup awal repo dan framework telah selesai, pengembangan dibagi **Vertical Slicing / Feature‑Based** untuk 3 programmer:
 
 ```
-                           +-----------------------------------+
-                           |        PROGRAMMER 1 (LEAD)        |
-                           | Setup Master, Auth & Modul Admin  |
-                           +-----------------+-----------------+
-                                             |
-            +--------------------------------+--------------------------------+
-            |                                                                 |
-+-----------v-----------------------+                             +-----------v-----------------------+
-| PROGRAMMER 2                      |                             | PROGRAMMER 3                      |
-| Modul List/Project & Kolaborasi   |                             | Modul Task Engine & Progress UI   |
-+-----------------------------------+                             +-----------------------------------+
++-----------------------------------------------------------------------------------+
+|                            DEVELOPMENT PHASE (3 PROGRAMMERS)                      |
++------------------------------------+----------------------------------------------+
+                                     |
+    +--------------------------------+--------------------------------+
+    |                                |                                |
++---v------------------------+  +----v-----------------------+  +-----v------------------------+
+| PROGRAMMER 1               |  | PROGRAMMER 2               |  | PROGRAMMER 3                 |
+| User Auth, Admin & Security|  | Project/List & Transaksi   |  | Task Operations & Progress   |
+| (Modul 1)                  |  | Atomis (Modul 2)           |  | Monitoring (Modul 3 & 4)    |
++----------------------------+  +----------------------------+  +------------------------------+
 ```
 
-## Programmer 1: Foundation, Auth & Admin Management (Lead)
+### Programmer 1: User Auth, Admin & Security Specialist (Modul 1)
+- Implement `AdminController` & Blade UI untuk manajemen akun.
+- Middleware memastikan hanya role `Admin` yang dapat mengakses.
+- Form Request Validation untuk semua input (nama, email, password).
 
-**Fokus**: Menyiapkan struktur dasar aplikasi Laravel dan menangani seluruh manajemen akun.
+### Programmer 2: Project/List & Atomic Transaction Specialist (Modul 2)
+- `ListController` & Blade UI untuk pembuatan daftar, otomatis set owner.
+- Hapus daftar menggunakan `DB::transaction()` untuk atomicity.
+- Fitur penambahan/penghapusan anggota serta `ListPolicy` untuk otorisasi.
 
-### Tanggung Jawab
-
-#### Setup Proyek
-Inisialisasi framework Laravel, pengaturan database (.env), konfigurasi CSS (Tailwind/Bootstrap), dan struktur folder views/Blade layout utama.
-
-#### Authentication & Access Control
-- Membuat fitur Login & Logout (bisa memanfaatkan Laravel Breeze / skema auth standar).
-- Membuat Middleware Laravel untuk memisahkan hak akses antara Admin dan User.
-
-#### Modul Admin (SRS Module 1)
-- Membuat AdminController & Migration tambahan untuk role user.
-- Membuat tampilan Blade Dashboard Admin.
-- Mengimplementasikan fungsi Tambah User Baru dan Hapus User oleh Admin.
-
-#### Migration Database
-Membuat tabel dasar users dan roles.
-
-## Programmer 2: List/Project & Team Collaboration Specialist
-
-**Fokus**: Menangani wadah proyek/daftar dan sistem pengundangan anggota tim.
-
-### Tanggung Jawab
-
-#### Database Migration & Model
-Membuat tabel lists / projects dan tabel pivot list_user (untuk relasi Many-to-Many antara Daftar dan Anggota).
-
-#### Modul List / Project (SRS Module 2.1)
-- Membuat ListController (CRUD Daftar/Proyek).
-- Membuat tampilan Blade untuk halaman daftar proyek (Halaman Utama User).
-- Memastikan aturan bahwa pembuat daftar otomatis tercatat sebagai List Owner.
-
-#### Modul Kolaborasi Tim (SRS Module 2.2)
-- Membuat fitur pencarian dan penambahan akun user ke dalam daftar (Add Member).
-- Membuat fitur hapus anggota dari daftar (Remove Member).
-- Membuat Laravel Policy (ListPolicy) untuk memastikan hanya Owner yang bisa menambah/menghapus anggota atau menghapus daftar.
-
-## Programmer 3: Task Engine & Progress Tracking Specialist
-
-**Fokus**: Menangani pengoperasian tugas individu/tim dan visualisasi pemantauan.
-
-### Tanggung Jawab
-
-#### Database Migration & Model
-Membuat tabel tasks (dengan kolom list_id, assigned_to, title, description, priority, due_date, is_completed).
-
-#### Modul Pengelolaan Tugas (SRS Module 3)
-- Membuat TaskController (CRUD Tugas di dalam daftar).
-- Membuat form modal/halaman Blade untuk tambah & edit tugas.
-- Mengimplementasikan fitur penetapan Priority, Due Date, Assignee (pilih anggota daftar), dan toggle Check/Uncheck (Selesai).
-
-#### Modul Progress & Monitoring (SRS Module 4)
-- Membuat kalkulasi persentase penyelesaian tugas di Controller/Model.
-- Membuat komponen Progress Bar di tampilan Blade.
-- Membuat logika kondisional warna/badge untuk tugas yang Overdue (melewati tenggat waktu).
-- Membuat fitur filtering tugas (berdasarkan status selesai/belum, prioritas, atau penanggung jawab).
-
-## Alur Integrasi Antar Programmer
-
-### Sprint Awal (Hari 1-2)
-Programmer 1 melakukan setup repositori Git, instansiasi Laravel, dan membagikan basis kode awal yang sudah memiliki sistem Auth.
-
-### Sprint Pengembangan (Hari 3-7)
-- Programmer 1 menyelesaikan fitur Admin.
-- Programmer 2 membuat fitur List dan pengundangan anggota tim.
-- Programmer 3 membuat fitur Task di dalam List yang dibuat Programmer 2.
-
-### Sprint Final (Hari 8-10)
-Penggabungan seluruh file Blade layout, pengujian Laravel Policy/Middleware, dan perbaikan tampilan (UI).
+### Programmer 3: Task Operations & Progress Monitoring Specialist (Modul 3 & 4)
+- `TaskController` & Blade modal untuk CRUD tugas, prioritas, due date, assignee, dan toggle selesai.
+- Kalkulasi persentase penyelesaian tugas dan progress bar.
+- Indikator visual (warna merah) untuk tugas overdue serta filter tugas.

@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Admin default
         User::updateOrCreate(
             ['email' => 'admin@example.com'],
             [
@@ -26,6 +27,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // Staff default
         User::updateOrCreate(
             ['email' => 'staff@example.com'],
             [
@@ -36,6 +38,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // User biasa untuk testing
         User::updateOrCreate(
             ['email' => 'user@example.com'],
             [
@@ -43,6 +46,29 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => 'user',
                 'is_verified' => true,
+            ]
+        );
+
+        // User Demo untuk SRS Module 2 (Owner & Member)
+        User::updateOrCreate(
+            ['email' => 'user1@example.com'],
+            [
+                'name' => 'User Satu (Owner Demo)',
+                'password' => Hash::make('password'),
+                'role' => 'user',
+                'is_verified' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'user2@example.com'],
+            [
+                'name' => 'User Dua (Member Demo)',
+                'password' => Hash::make('password'),
+                'role' => 'user',
+                'is_verified' => true,
+                'email_verified_at' => now(),
             ]
         );
     }
